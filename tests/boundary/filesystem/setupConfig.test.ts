@@ -24,7 +24,7 @@ import { readClientRegistrationStatuses } from "../../../src/application/ClientR
 import { failedConfigurationMessage } from "../../../src/application/SetupClients.js";
 import { PRODUCT_IDENTITY } from "../../../src/identity.js";
 
-const pinnedPackage = PRODUCT_IDENTITY.registrationPackageSpecifier;
+const pinnedPackage = PRODUCT_IDENTITY.npxRegistrationPackageSpecifier;
 
 describe("JSON client configuration transaction: writing configuration through safe paths", () => {
   it.skipIf(typeof process.getuid !== "function")(

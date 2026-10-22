@@ -458,7 +458,7 @@ the data directory as aligned. Ask the Grok Bot chat to add a custom MCP
 server named `rea` that runs on the Bot's computer:
 
 ```bash
-npx -y rea-agents@<version> mcp
+npx -y rea-agents@npm:rea-agents@<version> mcp
 ```
 
 Do not put credentials in that command or its arguments. `rea doctor --client grok_bot`

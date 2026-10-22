@@ -444,7 +444,11 @@ describe("canonical skill discovery", () => {
         mcpServers: {
           rea: {
             command: "npx",
-            args: ["-y", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"],
+            args: [
+              "-y",
+              PRODUCT_IDENTITY.npxRegistrationPackageSpecifier,
+              "mcp",
+            ],
           },
         },
       }),

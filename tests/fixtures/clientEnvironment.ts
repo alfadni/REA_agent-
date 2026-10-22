@@ -6,7 +6,7 @@ import { PRODUCT_IDENTITY } from "../../src/identity.js";
 export const NPX_REGISTRATION_COMMAND = [
   "npx",
   "-y",
-  PRODUCT_IDENTITY.registrationPackageSpecifier,
+  PRODUCT_IDENTITY.npxRegistrationPackageSpecifier,
   "mcp",
 ] as const;
 

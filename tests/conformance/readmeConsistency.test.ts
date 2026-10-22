@@ -38,7 +38,11 @@ describe("onboarding documentation product facts", () => {
         mcpServers: expect.objectContaining({
           rea: expect.objectContaining({
             command: "npx",
-            args: ["-y", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"],
+            args: [
+              "-y",
+              PRODUCT_IDENTITY.npxRegistrationPackageSpecifier,
+              "mcp",
+            ],
           }),
         }),
       }),

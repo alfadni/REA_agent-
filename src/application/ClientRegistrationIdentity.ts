@@ -59,7 +59,7 @@ export const packageRunnerRegistrationCommand = (
 ): readonly string[] => {
   const command =
     runner === "npx"
-      ? ["npx", "-y", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"]
+      ? ["npx", "-y", PRODUCT_IDENTITY.npxRegistrationPackageSpecifier, "mcp"]
       : ["bunx", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"];
   // Both runners may be .cmd shims on Windows, which clients cannot spawn directly.
   return platform === "win32" ? ["cmd.exe", "/d", "/c", ...command] : command;
@@ -100,19 +100,27 @@ export const clientRegistrationPackageReference = (
   return undefined;
 };
 
-const isOwnedPackageReference = (packageReference: string): boolean => {
-  if (
-    packageReference === PRODUCT_IDENTITY.packageName ||
-    packageReference === PRODUCT_IDENTITY.packageSpecifier ||
-    packageReference === PRODUCT_IDENTITY.registrationPackageSpecifier
-  )
-    return true;
+/**
+ * Read the exact REA version a package reference pins, directly or through the
+ * npm alias npx registrations use; tags, ranges, and other packages yield undefined.
+ */
+export const pinnedPackageVersion = (
+  packageReference: string,
+): string | undefined => {
   const versionPrefix = `${PRODUCT_IDENTITY.packageName}@`;
-  return (
-    packageReference.startsWith(versionPrefix) &&
-    valid(packageReference.slice(versionPrefix.length)) !== null
-  );
+  const aliasPrefix = `${versionPrefix}npm:${versionPrefix}`;
+  const prefix = packageReference.startsWith(aliasPrefix)
+    ? aliasPrefix
+    : versionPrefix;
+  if (!packageReference.startsWith(prefix)) return undefined;
+  const version = packageReference.slice(prefix.length);
+  return valid(version) === version ? version : undefined;
 };
+
+const isOwnedPackageReference = (packageReference: string): boolean =>
+  packageReference === PRODUCT_IDENTITY.packageName ||
+  packageReference === PRODUCT_IDENTITY.packageSpecifier ||
+  pinnedPackageVersion(packageReference) !== undefined;
 
 /** Check that one parsed command points to REA's MCP entry point. */
 export type ClientRegistrationCommandIdentity = "owned" | "foreign" | "unknown";

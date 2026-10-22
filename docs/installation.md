@@ -291,14 +291,14 @@ Register with the variable unset:
 <!-- x-release-please-start-version -->
 
 ```bash
-claude mcp add --scope local rea -- npx -y rea-agents@6.7.0 mcp
+claude mcp add --scope local rea -- npx -y rea-agents@npm:rea-agents@6.7.0 mcp
 ```
 
 On native Windows, use the same project directory and wrap the package-runner
 shim so the stdio client can launch it:
 
 ```powershell
-claude mcp add --scope local rea -- cmd.exe /d /c npx -y rea-agents@6.7.0 mcp
+claude mcp add --scope local rea -- cmd.exe /d /c npx -y rea-agents@npm:rea-agents@6.7.0 mcp
 ```
 
 <!-- x-release-please-end -->
@@ -1275,7 +1275,7 @@ For a client that requires manual configuration, use:
   "mcpServers": {
     "rea": {
       "command": "npx",
-      "args": ["-y", "rea-agents@6.7.0", "mcp"]
+      "args": ["-y", "rea-agents@npm:rea-agents@6.7.0", "mcp"]
     }
   }
 }
@@ -1286,8 +1286,11 @@ For a client that requires manual configuration, use:
 Persistent registrations should use one exact package version. `rea setup`
 writes the same package-runner shape, or `bunx rea-agents@<version> mcp` when
 setup runs through `bunx`, and pins it to the exact version that performed
-setup. Run current setup to refresh an older registration, then restart the
-client.
+setup. The npx registration names that version through an npm alias because
+npx resolves a plain exact-version spec against the current project first: in
+a REA source checkout of the same version it finds the unbuilt project instead
+of the registry package and fails with `rea: not found`. Run current setup to
+refresh an older registration, then restart the client.
 
 ## Package runners and global installation
 
@@ -1315,7 +1318,7 @@ managed registrations through the normal reviewed setup transaction.
 
 With Bun, `bunx rea-agents setup` (or `bunx rea-agents@latest setup`) is the
 equivalent entry point. Setup run through `npx` registers
-`npx -y rea-agents@<version> mcp`; setup run through `bunx` or `bun x` registers
+`npx -y rea-agents@npm:rea-agents@<version> mcp`; setup run through `bunx` or `bun x` registers
 `bunx rea-agents@<version> mcp`. On Windows, setup wraps either command in
 `cmd.exe /d /c` so clients can start the runner's command shim. Neither
 registration points into the runner's temporary package cache.
