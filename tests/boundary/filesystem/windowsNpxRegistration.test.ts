@@ -154,7 +154,7 @@ it("retains rea-named custom shell registrations without writing a backup", asyn
 });
 
 it.skipIf(process.platform !== "win32").each([
-  ["npx", ["-y", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"]],
+  ["npx", ["-y", PRODUCT_IDENTITY.npxRegistrationPackageSpecifier, "mcp"]],
   ["bunx", [PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"]],
 ] as const)(
   "starts the written Windows registration through a native %s.cmd shim",

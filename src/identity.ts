@@ -8,9 +8,15 @@ export const PRODUCT_IDENTITY = {
   packageName: PACKAGE_METADATA.name,
   packageSpecifier: `${PACKAGE_METADATA.name}@latest`,
   registrationPackageSpecifier: `${PACKAGE_METADATA.name}@${PACKAGE_METADATA.version}`,
+  /**
+   * npm resolves an exact-version spec against the current project tree, whose
+   * root is REA itself inside a source checkout of the same version, and then
+   * finds no linked bin. An npm alias always fetches the pinned registry package.
+   */
+  npxRegistrationPackageSpecifier: `${PACKAGE_METADATA.name}@npm:${PACKAGE_METADATA.name}@${PACKAGE_METADATA.version}`,
   packageVersion: PACKAGE_METADATA.version,
   cliBinary: "rea",
-  mcpCommand: `npx -y ${PACKAGE_METADATA.name}@${PACKAGE_METADATA.version} mcp`,
+  mcpCommand: `npx -y ${PACKAGE_METADATA.name}@npm:${PACKAGE_METADATA.name}@${PACKAGE_METADATA.version} mcp`,
   mcpServerKey: "rea",
   skillName: "reverse-engineer-anything",
   skillVersion: PACKAGE_METADATA.skillVersion,

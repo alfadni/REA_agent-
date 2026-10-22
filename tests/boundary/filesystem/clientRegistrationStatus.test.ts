@@ -24,7 +24,11 @@ describe("client registration status", () => {
         mcpServers: {
           rea: {
             command: "npx",
-            args: ["-y", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"],
+            args: [
+              "-y",
+              PRODUCT_IDENTITY.npxRegistrationPackageSpecifier,
+              "mcp",
+            ],
           },
         },
       }),
@@ -56,7 +60,7 @@ describe("client registration status", () => {
     ]);
     await writeFile(
       join(home, ".codex/config.toml"),
-      `[mcp_servers.rea]\ncommand = "npx"\nargs = ["-y", "${PRODUCT_IDENTITY.registrationPackageSpecifier}", "mcp"]\nstartup_timeout_sec = 30\ntool_timeout_sec = 450\n`,
+      `[mcp_servers.rea]\ncommand = "npx"\nargs = ["-y", "${PRODUCT_IDENTITY.npxRegistrationPackageSpecifier}", "mcp"]\nstartup_timeout_sec = 30\ntool_timeout_sec = 450\n`,
     );
     await writeFile(
       join(home, ".cursor/mcp.json"),
@@ -229,12 +233,45 @@ describe("client registration launcher identity", () => {
     });
   });
 
-  it("reports the exact requested package version when it differs from this CLI", async () => {
-    const home = await createTestTempDirectory(
-      "rea-registration-version-drift-",
-    );
+  it.each(["rea-agents@4.1.0", "rea-agents@npm:rea-agents@4.1.0"])(
+    "reports the exact requested package version of %s when it differs from this CLI",
+    async (packageReference) => {
+      const home = await createTestTempDirectory(
+        "rea-registration-version-drift-",
+      );
+      await mkdir(join(home, ".codex"));
+      const command = ["npx", "-y", packageReference, "mcp"];
+      await writeFile(
+        join(home, ".codex/config.toml"),
+        `[mcp_servers.rea]\ncommand = "${command[0]}"\nargs = ["${command[1]}", "${command[2]}", "${command[3]}"]\n`,
+      );
+
+      const [status] = await readClientRegistrationStatuses(home);
+
+      expect(status).toMatchObject({
+        client: "codex",
+        command,
+        package_reference: packageReference,
+        state: "stale",
+        remediation: expect.stringContaining(
+          `current REA CLI package is ${PRODUCT_IDENTITY.packageVersion}`,
+        ),
+      });
+      expect(status?.remediation).toContain("does not resolve package-runner");
+      expect(status?.remediation).toContain("rea setup --client codex");
+    },
+  );
+
+  it("reports a current-version npx registration without the npm alias as stale", async () => {
+    // npx resolves the unaliased spec against a same-version REA source checkout.
+    const home = await createTestTempDirectory("rea-registration-unaliased-");
     await mkdir(join(home, ".codex"));
-    const command = ["npx", "-y", "rea-agents@4.1.0", "mcp"];
+    const command = [
+      "npx",
+      "-y",
+      PRODUCT_IDENTITY.registrationPackageSpecifier,
+      "mcp",
+    ];
     await writeFile(
       join(home, ".codex/config.toml"),
       `[mcp_servers.rea]\ncommand = "${command[0]}"\nargs = ["${command[1]}", "${command[2]}", "${command[3]}"]\n`,
@@ -245,14 +282,9 @@ describe("client registration launcher identity", () => {
     expect(status).toMatchObject({
       client: "codex",
       command,
-      package_reference: "rea-agents@4.1.0",
+      package_reference: PRODUCT_IDENTITY.registrationPackageSpecifier,
       state: "stale",
-      remediation: expect.stringContaining(
-        `current REA CLI package is ${PRODUCT_IDENTITY.packageVersion}`,
-      ),
     });
-    expect(status?.remediation).toContain("does not resolve package-runner");
-    expect(status?.remediation).toContain("rea setup --client codex");
   });
 });
 
@@ -270,7 +302,7 @@ describe("commandcode registration status", () => {
 
   const ownedArgs = (): readonly string[] => [
     "-y",
-    PRODUCT_IDENTITY.registrationPackageSpecifier,
+    PRODUCT_IDENTITY.npxRegistrationPackageSpecifier,
     "mcp",
   ];
 

@@ -139,7 +139,11 @@ for (const policy of [{ excluded: ["rea"] }, { allowed: ["other"] }]) {
         mcpServers: {
           rea: {
             command: "npx",
-            args: ["-y", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"],
+            args: [
+              "-y",
+              PRODUCT_IDENTITY.npxRegistrationPackageSpecifier,
+              "mcp",
+            ],
           },
         },
       });
@@ -203,7 +207,7 @@ cliTest(
           command: [
             "npx",
             "-y",
-            PRODUCT_IDENTITY.registrationPackageSpecifier,
+            PRODUCT_IDENTITY.npxRegistrationPackageSpecifier,
             "mcp",
           ],
           enabled: true,
@@ -485,7 +489,7 @@ cliTest(
             command: [
               "npx",
               "-y",
-              PRODUCT_IDENTITY.registrationPackageSpecifier,
+              PRODUCT_IDENTITY.npxRegistrationPackageSpecifier,
               "mcp",
             ],
             enabled: true,
@@ -544,7 +548,7 @@ cliTest(
       command: [
         "npx",
         "-y",
-        PRODUCT_IDENTITY.registrationPackageSpecifier,
+        PRODUCT_IDENTITY.npxRegistrationPackageSpecifier,
         "mcp",
       ],
       enabled: true,

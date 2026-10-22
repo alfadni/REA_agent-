@@ -64,7 +64,7 @@ it("plans setup and uninstall against selected home and client overrides", async
       ]),
     );
     expect(host.registrationCommand).toContain(
-      PRODUCT_IDENTITY.registrationPackageSpecifier,
+      PRODUCT_IDENTITY.npxRegistrationPackageSpecifier,
     );
     const clients = await systemUninstallHost(
       environment.HOME,
